@@ -1,6 +1,7 @@
 package hello.member.service;
 
 import hello.member.dto.MemberDTO;
+import hello.member.entity.Member;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ public interface MemberService {
 
     MemberDTO updateForm(String Email);
 
-    void update(MemberDTO memberDTO);
+    void update(Long id,MemberDTO updateParam);
 
     void deleteById(Long id);
 

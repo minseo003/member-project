@@ -14,10 +14,18 @@ public class MemberDTO {
     private String Name;
 
     @Builder
-    public MemberDTO(Member member) {
-        this.id = member.getId();
-        this.memberEmail = member.getMemberEmail();
-        this.Password = member.getPassword();
-        this.Name = member.getName();
+    public MemberDTO(String memberEmail, String password, String name) {
+        this.memberEmail = memberEmail;
+        this.Password = password;
+        this.Name = name;
+    }
+
+    public static MemberDTO toMemberDTO(Member member) {
+        MemberDTO memberDTO = new MemberDTO();
+        memberDTO.setId(member.getId());
+        memberDTO.setMemberEmail(member.getMemberEmail());
+        memberDTO.setPassword(member.getPassword());
+        memberDTO.setName(member.getName());
+        return memberDTO;
     }
 }

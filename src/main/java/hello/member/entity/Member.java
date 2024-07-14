@@ -29,12 +29,21 @@ public class Member {
     private String Name;
 
     @Builder
-    public Member(MemberDTO memberDTO) {
-        this.id = memberDTO.getId();
-        this.memberEmail = memberDTO.getMemberEmail();
-        this.Password = memberDTO.getPassword();
-        this.Name = memberDTO.getName();
+    public Member(String memberEmail, String password, String name) {
+        this.memberEmail = memberEmail;
+        Password = password;
+        Name = name;
     }
+
+    public static Member toMember(MemberDTO memberDTO) {
+        Member member = new Member();
+        member.id = memberDTO.getId(); //?
+        member.memberEmail = memberDTO.getMemberEmail();
+        member.Password = memberDTO.getPassword();
+        member.Name = memberDTO.getName();
+        return member;
+    }
+
     public static void updateMember(Member member, MemberDTO memberDTO) {
         member.memberEmail = memberDTO.getMemberEmail();
         member.Password = memberDTO.getPassword();
