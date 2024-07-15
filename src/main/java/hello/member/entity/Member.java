@@ -23,31 +23,31 @@ public class Member {
     private String memberEmail;
     @Column
     @NotBlank
-    private String Password;
+    private String password;
     @Column
     @NotEmpty
-    private String Name;
+    private String name;
 
     @Builder
     public Member(String memberEmail, String password, String name) {
         this.memberEmail = memberEmail;
-        Password = password;
-        Name = name;
+        this.password = password;
+        this.name = name;
     }
 
     public static Member toMember(MemberDTO memberDTO) {
         Member member = new Member();
         member.id = memberDTO.getId(); //?
         member.memberEmail = memberDTO.getMemberEmail();
-        member.Password = memberDTO.getPassword();
-        member.Name = memberDTO.getName();
+        member.password = memberDTO.getPassword();
+        member.name = memberDTO.getName();
         return member;
     }
 
     public static void updateMember(Member member, MemberDTO memberDTO) {
         member.memberEmail = memberDTO.getMemberEmail();
-        member.Password = memberDTO.getPassword();
-        member.Name = memberDTO.getName();
+        member.password = memberDTO.getPassword();
+        member.name = memberDTO.getName();
     }
 
 }

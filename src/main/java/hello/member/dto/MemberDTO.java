@@ -10,14 +10,14 @@ import lombok.*;
 public class MemberDTO {
     private Long id;
     private String memberEmail;
-    private String Password;
-    private String Name;
+    private String password;
+    private String name;
 
     @Builder
     public MemberDTO(String memberEmail, String password, String name) {
         this.memberEmail = memberEmail;
-        this.Password = password;
-        this.Name = name;
+        this.password = password;
+        this.name = name;
     }
 
     public static MemberDTO toMemberDTO(Member member) {

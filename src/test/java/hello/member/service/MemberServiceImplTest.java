@@ -2,6 +2,7 @@ package hello.member.service;
 
 import hello.member.dto.MemberDTO;
 import hello.member.exception.MemberNotFoundException;
+import hello.member.form.loginForm;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
@@ -18,15 +19,10 @@ import static org.assertj.core.api.Assertions.*;
 @Slf4j
 @Transactional
 class MemberServiceImplTest {
-
     @Autowired
     MemberService memberService;
 
-    @PersistenceContext
-    EntityManager em;
-
     @Test
-
     void findAll() {
         MemberDTO dto1 = new MemberDTO("test1", "1234", "userA");
         memberService.save(dto1);
@@ -87,18 +83,27 @@ class MemberServiceImplTest {
 
     @Test
     void login() {
+
+
         MemberDTO dto1 = new MemberDTO("test1", "1234", "userA");
-        memberService.save(dto1);
         MemberDTO dto2 = new MemberDTO("test2", "4567", "userB");
         MemberDTO dto3 = new MemberDTO("test3", "9999", "userC");
+        memberService.save(dto1);
+        memberService.save(dto2);
+        memberService.save(dto3);
 
-        MemberDTO login1 = memberService.login(dto1);
-        MemberDTO login2 = memberService.login(dto2);
-        MemberDTO login3 = memberService.login(dto3);
+        loginForm test1 = new loginForm("test1", "1234");
+        loginForm test2 = new loginForm("test２","4567");
+        loginForm test3 = new loginForm("test３", "9999");
+
+        MemberDTO login1 = memberService.login(test1);
+        MemberDTO login2 = memberService.login(test2);
+        MemberDTO login3 = memberService.login(test3);
+
 
         assertThat(login1.getName()).isEqualTo("userA");
-        assertThat(login2).isNull();
-        assertThat(login3).isNull();
+        assertThat(login2.getName()).isEqualTo("userB");
+        assertThat(login3.getName()).isEqualTo("userC");
     }
 
     @Test

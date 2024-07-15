@@ -3,6 +3,7 @@ package hello.member.service;
 import hello.member.dto.MemberDTO;
 import hello.member.entity.Member;
 import hello.member.exception.MemberNotFoundException;
+import hello.member.form.loginForm;
 import hello.member.repository.MemberRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -34,14 +35,14 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberDTO login(MemberDTO memberDTO) {
-        Optional<Member> byMemberEmail = memberRepository.findByMemberEmail(memberDTO.getMemberEmail());
+    public MemberDTO login(loginForm loginForm) {
+        Optional<Member> findMember = memberRepository.findByMemberEmail(loginForm.getMemberEmail());
 
         //이메일 검증
-        if (byMemberEmail.isPresent()) {
-            Member member = byMemberEmail.get();
+        if (findMember.isPresent()) {
+            Member member = findMember.get();
             //비밀번호 검증
-            if (member.getPassword().equals(memberDTO.getPassword())) {
+            if (member.getPassword().equals(loginForm.getPassword())) {
                 MemberDTO dto = MemberDTO.toMemberDTO(member);
                 return dto;
             } else {
