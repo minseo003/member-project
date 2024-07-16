@@ -1,12 +1,10 @@
-server:
-  port: 8081
 
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/member?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: root2
-    password: minseo0325
+    username: user
+    password: Rnjsalstj03!
   thymeleaf:
     cache: false
 

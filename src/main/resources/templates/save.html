@@ -1,56 +1,66 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>save</title>
-    <!-- jquery cdn -->
-    <script
-            src="https://code.jquery.com/jquery-3.6.3.min.js"
-            integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
-            crossorigin="anonymous"></script>
-</head>
-<body>
-<!-- action속성: form에 작성한 데이터를 어디로 보낼지 지정 -->
-<form action="/member/save" method="post">
-    <!-- name속성: 서버로 전송할 때 변수이름의 역할 -->
-    이메일: <input type="text" name="memberEmail" id="memberEmail" onblur="emailCheck()"> <br>
-    <p id="check-result"></p>
-    비밀번호: <input type="password" name="password"> <br>
-    이름: <input type="text" name="name"> <br>
-    <input type="submit" value="회원가입">
+    <link th:href="@{/css/bootstrap.min.css}"
+    href="/css/bootstrap.min.css" rel="stylesheet">
 
-</form>
+    <style>
+        .container {
+            max-width: 560px;
+        }
+        .field-error {
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+    </style>
+
+</head>
+
+<body>
+<div class="container">
+
+    <div class="py-5 text-center">
+        <h2>회원가입</h2>
+    </div>
+    <h4 class="mb-3">회원 정보 입력</h4>
+
+    <form action="detail.html" th:action th:object="${member}" method="post">
+        <div>
+            <label for="emailId">이메일 아이디</label>
+            <input type="text" id="emailId" th:field="*{memberEmail}"
+                   class="form-control"
+                   th:errorclass="field-error">
+            <div class="field-error" th:errors="*{memberEmail}" />
+        </div>
+        <div>
+            <label for="password">비밀번호</label>
+            <input type="password" id="password" th:field="*{password}"
+            class="form-control"
+            th:errorclass="field-error">
+            <div class="field-error" th:errors="*{password}" />
+        </div>
+        <div>
+            <label for="name">이름</label>
+            <input type="text" id="name" th:field="*{name}"
+            class="form-control"
+            th:errorclass="field-error">
+            <div class="field-error" th:errors="*{name}" />
+        </div>
+        <hr class="my-4">
+        <div class="row">
+            <div class="col">
+                <button class="w-100 btn btn-primary btn-lg" type="submit">회원가입</button>
+            </div>
+            <div class="col">
+                <button class="w-100 btn btn-secondary btn-lg"
+                        th:onclick="|location.href='@{/}'|"
+                        type="button">취소</button>
+            </div>
+        </div>
+    </form>
+</div> <!-- container -->
 </body>
-<script th:inline="javascript">
-    const emailCheck = () => {
-        const email = document.getElementById("memberEmail").value;
-        const checkResult = document.getElementById("check-result");
-        console.log("입력값: ", email);
-        $.ajax({
-            // 요청방식: post, url: "email-check", 데이터: 이메일
-            type: "post",
-            url: "/member/email-check",
-            data: {
-                "memberEmail": email
-            },
-            success: function(res) {
-                console.log("요청성공", res);
-                if (res == "ok") {
-                    console.log("사용가능한 이메일");
-                    checkResult.style.color = "green";
-                    checkResult.innerHTML = "사용가능한 이메일";
-                } else {
-                    console.log("이미 사용중인 이메일");
-                    checkResult.style.color = "red";
-                    checkResult.innerHTML = "이미 사용중인 이메일";
-                }
-            },
-            error: function(err) {
-                console.log("에러발생", err);
-            }
-        });
-    }
-</script>
 </html>
 
 

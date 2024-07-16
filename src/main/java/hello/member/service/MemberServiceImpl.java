@@ -1,12 +1,11 @@
 package hello.member.service;
 
 import hello.member.dto.MemberDTO;
+import hello.member.dto.loginDTO;
+import hello.member.dto.saveDTO;
 import hello.member.entity.Member;
 import hello.member.exception.MemberNotFoundException;
-import hello.member.form.loginForm;
 import hello.member.repository.MemberRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,27 +23,27 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public void save(MemberDTO memberDTO) {
-        Member savedMember = Member.builder()
-                .memberEmail(memberDTO.getMemberEmail())
-                .password(memberDTO.getPassword())
-                .name(memberDTO.getName())
-                .build();
+    public void save(saveDTO dto) {
+            Member savedMember = Member.builder()
+                    .memberEmail(dto.getMemberEmail())
+                    .password(dto.getPassword())
+                    .name(dto.getName())
+                    .build();
 
-        memberRepository.save(savedMember);
+            memberRepository.save(savedMember);
     }
 
     @Override
-    public MemberDTO login(loginForm loginForm) {
-        Optional<Member> findMember = memberRepository.findByMemberEmail(loginForm.getMemberEmail());
+    public MemberDTO login(loginDTO dto) {
+        Optional<Member> findMember = memberRepository.findByMemberEmail(dto.getMemberEmail());
 
         //이메일 검증
         if (findMember.isPresent()) {
             Member member = findMember.get();
             //비밀번호 검증
-            if (member.getPassword().equals(loginForm.getPassword())) {
-                MemberDTO dto = MemberDTO.toMemberDTO(member);
-                return dto;
+            if (member.getPassword().equals(dto.getPassword())) {
+                MemberDTO dtoMember = MemberDTO.toMemberDTO(member);
+                return dtoMember;
             } else {
                 return null;
             }
@@ -93,7 +92,7 @@ public class MemberServiceImpl implements MemberService {
     public String emailCheck(String memberEmail) {
         Optional<Member> findMember = memberRepository.findByMemberEmail(memberEmail);
 
-        if (findMember.isPresent()) return String.valueOf(Optional.empty());
+        if (findMember.isPresent()) return null;
         else return "ok";
     }
 }

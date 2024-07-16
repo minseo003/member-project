@@ -1,14 +1,14 @@
 package hello.member.service;
 
 import hello.member.dto.MemberDTO;
-import hello.member.entity.Member;
-import hello.member.form.loginForm;
+import hello.member.dto.loginDTO;
+import hello.member.dto.saveDTO;
 
 import java.util.List;
 
 public interface MemberService {
-    void save(MemberDTO memberDTO);
-    MemberDTO login(loginForm loginForm);
+    void save(saveDTO dto);
+    MemberDTO login(loginDTO logindto);
     List<MemberDTO> findAll();
     MemberDTO findById(Long id);
 

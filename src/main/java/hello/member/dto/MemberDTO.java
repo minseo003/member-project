@@ -1,6 +1,8 @@
 package hello.member.dto;
 
 import hello.member.entity.Member;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
 @Getter
@@ -9,11 +11,13 @@ import lombok.*;
 @ToString
 public class MemberDTO {
     private Long id;
+    @NotEmpty
     private String memberEmail;
+    @NotEmpty
     private String password;
+    @NotBlank
     private String name;
 
-    @Builder
     public MemberDTO(String memberEmail, String password, String name) {
         this.memberEmail = memberEmail;
         this.password = password;

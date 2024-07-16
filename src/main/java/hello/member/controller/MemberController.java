@@ -1,18 +1,22 @@
 package hello.member.controller;
 
 import hello.member.dto.MemberDTO;
-import hello.member.form.loginForm;
+import hello.member.dto.loginDTO;
+import hello.member.dto.saveDTO;
 import hello.member.service.MemberService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.Banner;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Controller
@@ -23,26 +27,42 @@ public class MemberController {
 
 
     @GetMapping("/member/save")
-    public String saveForm() {
+    public String saveForm(@ModelAttribute("member") saveDTO dto) {
         return "save";
     }
 
     @PostMapping("/member/save")
-    public String save(@ModelAttribute MemberDTO memberDTO) {
+    public String save(@Validated @ModelAttribute("member") saveDTO dto,
+                       Model model, BindingResult bindingResult) {
+
+        String res = memberService.emailCheck(dto.getMemberEmail());
+
+        if (res == null) {
+            bindingResult.addError(new FieldError("member", "memberEmail",
+                    "중복 이메일이 존재합니다"));
+        }
         log.info("MemberController.save");
-        log.info("memberDTO = {}", memberDTO);
-        memberService.save(memberDTO);
-        return "login";
+        log.info("memberDTO = {}", dto);
+
+
+        if (bindingResult.hasErrors()) {
+            return "save";
+        } else {
+            memberService.save(dto);
+            loginDTO loginDTO = new loginDTO();
+            model.addAttribute("loginDTO", loginDTO);
+            return "login";
+        }
     }
 
     @GetMapping("/member/login")
-    public String loginForm(@ModelAttribute("loginForm")loginForm form) {
+    public String loginForm(@ModelAttribute("loginDTO") loginDTO form) {
         return "login";
     }
 
     @PostMapping("/member/login")
-    public String login(@Validated @ModelAttribute loginForm form, BindingResult bindingResult,
-                        @RequestParam(defaultValue = "/") String redirectURL,
+    public String login(@Validated @ModelAttribute("loginDTO") loginDTO form,
+                        BindingResult bindingResult,
                         HttpSession session) {
 
         if (bindingResult.hasErrors()) {
