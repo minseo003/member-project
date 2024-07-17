@@ -1,5 +1,6 @@
 package hello.member.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,9 +8,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class loginDTO {
-    @NotEmpty
+    @NotBlank
     private String memberEmail;
-    @NotEmpty
+    @NotBlank
     private String password;
 
     public loginDTO(String memberEmail, String password) {

@@ -3,7 +3,10 @@ package hello.member.controller;
 import hello.member.dto.MemberDTO;
 import hello.member.dto.loginDTO;
 import hello.member.dto.saveDTO;
+import hello.member.entity.Member;
+import hello.member.repository.MemberRepository;
 import hello.member.service.MemberService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,9 +17,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Controller
@@ -24,6 +29,7 @@ import java.util.Objects;
 public class MemberController {
 
     private final MemberService memberService;
+    private final MemberRepository memberRepository;
 
 
     @GetMapping("/member/save")
@@ -33,7 +39,7 @@ public class MemberController {
 
     @PostMapping("/member/save")
     public String save(@Validated @ModelAttribute("member") saveDTO dto,
-                       Model model, BindingResult bindingResult) {
+                       BindingResult bindingResult, RedirectAttributes redirectAttributes){
 
         String res = memberService.emailCheck(dto.getMemberEmail());
 
@@ -49,9 +55,11 @@ public class MemberController {
             return "save";
         } else {
             memberService.save(dto);
-            loginDTO loginDTO = new loginDTO();
-            model.addAttribute("loginDTO", loginDTO);
-            return "login";
+            MemberDTO member = memberService.updateForm(dto.getMemberEmail());
+            Long id = member.getId();
+            redirectAttributes.addAttribute("id", id);
+            redirectAttributes.addAttribute("status", true);
+            return "redirect:/member/{id}";
         }
     }
 
@@ -63,19 +71,21 @@ public class MemberController {
     @PostMapping("/member/login")
     public String login(@Validated @ModelAttribute("loginDTO") loginDTO form,
                         BindingResult bindingResult,
-                        HttpSession session) {
-
+                        HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
             return "login";
         }
 
         MemberDTO result = memberService.login(form);
-        if (result != null) {
-            session.setAttribute("loginEmail", result.getMemberEmail());
-            return "main";
-        } else {
+        if (result == null) {
+            bindingResult.reject("loginFail","아이디 또는 비밀번호가 맞지 않습니다.");
             return "login";
         }
+
+        //세션이 있으면 있는 세션 반환, 없으면 신규세션 생성
+        HttpSession session = request.getSession();
+        session.setAttribute("loginEmail", result.getMemberEmail());
+        return "redirect:/";
 
     }
 

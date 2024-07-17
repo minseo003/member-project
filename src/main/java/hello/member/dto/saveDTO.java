@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class saveDTO {
-    @NotEmpty
-    private String memberEmail;
-    @NotEmpty
-    private String password;
     @NotBlank
+    private String memberEmail;
+    @NotBlank
+    private String password;
+    @NotEmpty
     private String name;
 
     public saveDTO(String memberEmail, String password, String name) {

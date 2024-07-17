@@ -42,8 +42,7 @@ public class MemberServiceImpl implements MemberService {
             Member member = findMember.get();
             //비밀번호 검증
             if (member.getPassword().equals(dto.getPassword())) {
-                MemberDTO dtoMember = MemberDTO.toMemberDTO(member);
-                return dtoMember;
+                return MemberDTO.toMemberDTO(member);
             } else {
                 return null;
             }
