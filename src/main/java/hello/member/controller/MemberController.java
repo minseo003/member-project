@@ -3,14 +3,11 @@ package hello.member.controller;
 import hello.member.dto.MemberDTO;
 import hello.member.dto.loginDTO;
 import hello.member.dto.saveDTO;
-import hello.member.entity.Member;
-import hello.member.repository.MemberRepository;
 import hello.member.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.Banner;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,8 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+
 
 @Slf4j
 @Controller
@@ -29,7 +25,6 @@ import java.util.Optional;
 public class MemberController {
 
     private final MemberService memberService;
-    private final MemberRepository memberRepository;
 
 
     @GetMapping("/member/save")
@@ -72,6 +67,7 @@ public class MemberController {
     public String login(@Validated @ModelAttribute("loginDTO") loginDTO form,
                         BindingResult bindingResult,
                         HttpServletRequest request) {
+
         if (bindingResult.hasErrors()) {
             return "login";
         }
@@ -82,9 +78,13 @@ public class MemberController {
             return "login";
         }
 
-        //세션이 있으면 있는 세션 반환, 없으면 신규세션 생성
+
+        /**
+         * 세션이 있으면 있는 세션 반환, 없으면 신규세션 생성해 반환
+         * 로그인 화면에서 취소 누른 사람들도 여기에 포함된다.
+         */
         HttpSession session = request.getSession();
-        session.setAttribute("loginEmail", result.getMemberEmail());
+        session.setAttribute("loginMember", result);
         return "redirect:/";
 
     }
@@ -97,48 +97,59 @@ public class MemberController {
     }
 
     @GetMapping("/member/{id}")
-    public String findById(@PathVariable Long id, Model model) {
+    public String findById(@PathVariable Long id, Model model,
+                           HttpSession session) {
         MemberDTO findMember = memberService.findById(id);
         model.addAttribute("member", findMember);
-        return "detail";
+        MemberDTO loginMember = (MemberDTO) session.getAttribute("loginMember");
+        if (loginMember == null) {
+            return "detail";
+        } else {
+            session.setAttribute("loginMember", findMember);
+            return "logindetail";
+        }
+
+
     }
 
     @GetMapping("/member/update")
     public String updateForm(HttpSession session, Model model) {
-        String myEmail = (String) session.getAttribute("loginEmail");
-        MemberDTO memberDTO = memberService.updateForm(myEmail);
-        model.addAttribute("updateMember", memberDTO);
-        model.addAttribute("memberId", memberDTO.getId());
+        MemberDTO member = (MemberDTO) session.getAttribute("loginMember");
+        model.addAttribute("updateMember", member);
         return "update";
     }
 
     @PostMapping("/member/update")
-    public String update(@ModelAttribute MemberDTO memberDTO,
-                         @ModelAttribute Long memberId) {
-        memberService.update(memberId, memberDTO);
-        return "redirect:/members" + memberDTO.getId();
+    public String update(@Validated @ModelAttribute("updateMember") MemberDTO dto,
+                         BindingResult bindingResult,HttpServletRequest request) {
+
+            if (bindingResult.hasErrors()) {
+                return "update";
+            } else {
+                memberService.update(dto.getId(), dto);
+                HttpSession session = request.getSession();
+                session.setAttribute("loginMember", dto);
+                return "redirect:/member/" + dto.getId();
+            }
+
+
     }
 
     @GetMapping("/member/delete/{id}")
-    public String delteById(@PathVariable Long id) {
+    public String deleteById(@PathVariable Long id,HttpServletRequest request) {
         memberService.deleteById(id);
-        return "redirect:/members";
-    }
-
-    @GetMapping("/member/logout")
-    public String logout(HttpSession session) {
+        HttpSession session = request.getSession(false);
         session.invalidate();
-        return "index";
+        return "redirect:/";
     }
 
-    @ResponseBody
-    @PostMapping("/member/email-check")
-    public String emailCheck(@RequestParam("memberEmail") String memberEmail) {
-        log.info("memberEmail : {}", memberEmail);
-        String checkResult = memberService.emailCheck(memberEmail);
-        return checkResult;
+    @PostMapping ("/member/logout")
+    public String logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
 
+        if (session != null) {
+            session.invalidate();
+        }
+        return "redirect:/";
     }
-
-
 }

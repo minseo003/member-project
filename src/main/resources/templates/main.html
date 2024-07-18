@@ -1,12 +1,32 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <link th:href="@{/css/bootstrap.min.css}"
+          href="/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <p th:text="${session.loginEmail}"></p>
-    <a href="/member/update">내 정보 수정하기</a>
-    <a href="/member/logout">로그아웃</a>
+<div class="container" style="max-width: 600px">
+<div class="py-5 text-center">
+    <h2>Welcome !</h2>
+</div>
+    <h4 class="mb-3" th:text="|로그인 : ${member.name}|">로그인 사용자 이름</h4>
+    <hr class="my-4">
+    <div class="row">
+        <div class="col">
+            <button class="w-100 btn btn-secondary btn-lg" type="button"
+                    th:onclick="|location.href='@{/member/update}'|">
+                회원 정보 수정
+            </button>
+        </div>
+        <div class="col">
+            <form th:action="@{/member/logout}" method="post">
+                <button class="w-100 btn btn-dark btn-lg" type="submit">
+                    로그아웃
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
 </body>
 </html>
