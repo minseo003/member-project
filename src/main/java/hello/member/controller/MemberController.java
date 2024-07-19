@@ -89,13 +89,6 @@ public class MemberController {
 
     }
 
-    @GetMapping("/members")
-    public String findAll(Model model) {
-        List<MemberDTO> all = memberService.findAll();
-        model.addAttribute("memberList", all);
-        return "list";
-    }
-
     @GetMapping("/member/{id}")
     public String findById(@PathVariable Long id, Model model,
                            HttpSession session) {
